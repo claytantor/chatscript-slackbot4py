@@ -11,6 +11,18 @@ from slackclient import SlackClient
 # constants
 EXAMPLE_COMMAND = "do"
 
+def get_bot_id(slack_client, app_config):
+    api_call = slack_client.api_call("users.list")
+    if api_call.get('ok'):
+        # retrieve all users so we can find our bot
+        users = api_call.get('members')
+        for user in users:
+            if 'name' in user and user.get('name') == app_config['bot-name']:
+                print("Bot ID for '" + user['name'] + "' is " + user.get('id'))
+                return user.get('id')
+    else:
+        print("could not find bot user with the name " + BOT_NAME)
+        return None
 
 def handle_command(
     slack_client, command, channel,
@@ -37,14 +49,14 @@ def handle_command(
     slack_client.api_call("chat.postMessage", channel=channel,
                           text=response, as_user=True)
 
-def parse_slack_output(slack_client, slack_rtm_output, config):
+def parse_slack_output(slack_client, slack_rtm_output, config, bot_id):
     """
         The Slack Real Time Messaging API is an events firehose.
         this parsing function returns None unless a message is
         directed at the Bot, based on its ID.
     """
 
-    at_bot = "<@{0}>".format(config['bot-id'])
+    at_bot = "<@{0}>".format(bot_id)
     output_list = slack_rtm_output
     if output_list and len(output_list) > 0:
         for output in output_list:
@@ -69,16 +81,21 @@ def main(argv):
     print "starting up slackbot with token: {0}".format(app_config['slack-bot-token'])
     slack_client = SlackClient(app_config['slack-bot-token'])
 
-    READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
-    if slack_client.rtm_connect():
-        print("{0} connected and running!".format(app_config['bot-name']))
-        while True:
-            user, command, channel = parse_slack_output(slack_client, slack_client.rtm_read(), config=app_config)
-            if command and channel:
-                handle_command(slack_client, command, channel, user=user, robotName=robotName)
-            time.sleep(READ_WEBSOCKET_DELAY)
+    bot_id = get_bot_id(slack_client, app_config)
+
+    if bot_id:
+        READ_WEBSOCKET_DELAY = 1 # 1 second delay between reading from firehose
+        if slack_client.rtm_connect():
+            print("{0} connected and running!".format(app_config['bot-name']))
+            while True:
+                user, command, channel = parse_slack_output(slack_client, slack_client.rtm_read(), config=app_config, bot_id=bot_id)
+                if command and channel:
+                    handle_command(slack_client, command, channel, user=user, robotName=robotName)
+                time.sleep(READ_WEBSOCKET_DELAY)
+        else:
+            print("Connection failed. Invalid Slack token or bot ID?")
     else:
-        print("Connection failed. Invalid Slack token or bot ID?")
+        print "could not authenticate token."
 
 if __name__ == "__main__":
     main(sys.argv[1:])
