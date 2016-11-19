@@ -1,5 +1,5 @@
 # chatscript-slackbot4py
-This project is a slackbot built on top of the claytantor/chatscript-docker
+This project is a slackbot built on top of the [claytantor/chatscript-docker](https://hub.docker.com/r/claytantor/chatscript-docker/)
 image but the slackbot bot client added on top of it.
 
 ## Create A slackbot user
