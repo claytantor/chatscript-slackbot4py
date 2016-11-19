@@ -1,0 +1,6 @@
+chatscript-client4py==1.0 # https://github.com/claytantor/chatscript-client4py
+requests==2.12.1
+six==1.10.0
+slackclient==1.0.2
+websocket-client==0.37.0
+wsgiref==0.1.2
