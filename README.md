@@ -2,7 +2,10 @@
 This project is a slackbot built on top of the claytantor/chatscript-docker
 image but the slackbot bot client added on top of it.
 
-## Create A slackbot
+## Create A slackbot user
+To enable your slackbot you need to create a slackbot user. You can find the
+documentation for getting your slackbot user token at the
+[Bot Users](https://api.slack.com/bot-users) docs. 
 
 
 ## Building a configuration
