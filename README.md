@@ -15,7 +15,7 @@ be available relative to the mount point (see run instructions below).
 
 ```
 {
-    "slack-bot-token":"xoxb-206587108564-a5Hi1iDwa5SZEBioCpoTfqrB",
+    "slack-bot-token":"[your slack bot user token]",
     "bot-name":"bebot",
     "chatscript-host-name":"localhost",
     "chatscript-port":1024,
